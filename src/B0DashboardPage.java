@@ -1,6 +1,9 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class B0DashboardPage extends JFrame {
 
@@ -28,27 +31,60 @@ public class B0DashboardPage extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
 
         String[] menuItems = {
-            "Daily Progress",
-            "Progress Summary",
-            "Update Info",
-            "My Profile",
-            "Logout",
+                "Daily Progress",
+                "Progress Summary",
+                "Update Info",
+                "My Profile",
+                "Logout",
         };
 
-        for (String menuItem : menuItems) {
-            JButton button = new JButton(menuItem);
+        String[] icons = {
+                "../svg/chart-line-solid.png",
+                "../svg/chart-pie-solid.png",
+                "../svg/user-cog-solid.png",
+                "../svg/user-solid.png",
+                "../svg/sign-out-alt-solid.png",
+        };
+
+        int[] iconWidths = { 29, 31, 31, 35, 29 };
+        int[] iconHeights = { 30, 27, 27, 35, 29 };
+
+        for (int i = 0; i < menuItems.length; i++) {
+            JButton button = new JButton(menuItems[i]);
             StyledComponents.applyButtonStyle(button, StyledComponents.myGreenButton()); // Apply green button style
-            button.setPreferredSize(new Dimension(400, 40)); // Set preferred button size
+            button.setPreferredSize(new Dimension(300, 50)); // Set preferred button size
+
+            ImageIcon icon = resizeIcon(icons[i], iconWidths[i], iconHeights[i]);
+            button.setIcon(icon);
+
+            // Resize icon to specified width and height and set on the left side
+            button.setHorizontalTextPosition(SwingConstants.RIGHT); // Align text to the right of the icon
+            button.setIconTextGap(10); // Add gap between icon and text
+            button.setHorizontalAlignment(SwingConstants.CENTER); // Center-align text
+
             panel.add(button, gbc);
             gbc.gridy++;
-            button.addActionListener(new MenuActionListener(menuItem));
+            gbc.insets = new Insets(20, 10, 20, 10); // Add extra space between buttons
+            button.addActionListener(new MenuActionListener(menuItems[i]));
         }
 
         topPanel.add(panel, BorderLayout.CENTER);
         add(topPanel);
     }
 
+    private ImageIcon resizeIcon(String iconPath, int width, int height) {
+        try {
+            BufferedImage originalImage = ImageIO.read(new File(iconPath));
+            Image resizedImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(resizedImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private class MenuActionListener implements ActionListener {
+
         private String menuItem;
 
         public MenuActionListener(String menuItem) {

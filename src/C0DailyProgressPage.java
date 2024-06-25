@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
@@ -7,8 +8,9 @@ import java.sql.*;
 public class C0DailyProgressPage extends JFrame {
 
     // Assuming these are your course names fetched dynamically
-    private String[] courseNames = {"Mathematics", "Physics", "Chemistry"};
+//    private String[] courseNames = {"Mathematics", "Physics", "Chemistry"};
 
+    private String[] courseNames;
     private JComboBox<String>[] courseAttendanceSelectors;
     private JComboBox<String> numActivitiesSelect;
     private JPanel extraActivityOptionsPanel;
@@ -18,13 +20,15 @@ public class C0DailyProgressPage extends JFrame {
     private JLabel dayOfWeekLabel;
     private JButton prevDayButton;
     private JButton nextDayButton;
+    private String  dayOfWeekglobal;
 
     public C0DailyProgressPage() {
         setTitle("Academic Progress Tracker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
         setupLayout();
-        updateDayOfWeek(); // Initialize the day of the week display
+//        updateDayOfWeek(); // Initialize the day of the week display
+//        getCourseNames();
         StyledComponents.setFixedSizeAndShow(this); // Commented out for compiling purposes
     }
 
@@ -45,6 +49,14 @@ public class C0DailyProgressPage extends JFrame {
         prevDayButton.addActionListener(e -> updateDate(-1));
 
         nextDayButton.addActionListener(e -> updateDate(1));
+
+        dayOfWeekLabel = new JLabel();
+        //StyledComponents.applyLabelStyle(dayOfWeekLabel); // Apply label style for dayOfWeekLabel
+        dayOfWeekLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        dayOfWeekLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        updateDayOfWeek();
+
 
         // Initialize course attendance selectors dynamically
         courseAttendanceSelectors = new JComboBox[courseNames.length];
@@ -71,10 +83,11 @@ public class C0DailyProgressPage extends JFrame {
 
         homeButton.addActionListener(e -> navigateToDashboard()); // Navigate to dashboard page
 
-        dayOfWeekLabel = new JLabel();
-        //StyledComponents.applyLabelStyle(dayOfWeekLabel); // Apply label style for dayOfWeekLabel
-        dayOfWeekLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        dayOfWeekLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//        dayOfWeekLabel = new JLabel();
+//        //StyledComponents.applyLabelStyle(dayOfWeekLabel); // Apply label style for dayOfWeekLabel
+//        dayOfWeekLabel.setFont(new Font("Arial", Font.BOLD, 18));
+//        dayOfWeekLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
     }
 
     private void setupLayout() {
@@ -112,6 +125,7 @@ public class C0DailyProgressPage extends JFrame {
         panel.add(new JLabel("Day of the Week:"), gbc);
         gbc.gridx++;
         panel.add(dayOfWeekLabel, gbc);
+//        System.out.println(dayOfWeekLabel.getText());
 
         gbc.gridx = 0;
         gbc.gridy++;
@@ -144,6 +158,43 @@ public class C0DailyProgressPage extends JFrame {
         panel.add(buttonPanel, gbc);
 
         getContentPane().add(panel, BorderLayout.CENTER);
+    }
+
+    public void getCourseNames() {
+        Conn conn = new Conn();
+        String username=SessionManager.getInstance().getCurrentUser().getUsername();
+
+        String querygetdata ="SELECT * FROM rutine"+username+" WHERE day = '" + dayOfWeekglobal + "'";
+
+        ArrayList<String> arrayList = new ArrayList<>();
+        try (Connection connection = conn.getConnection();
+             PreparedStatement pstmtgetdata = connection.prepareStatement(querygetdata)) {
+
+            System.out.println(pstmtgetdata.toString());
+
+            try (ResultSet resultSet = pstmtgetdata.executeQuery()) {
+                if (resultSet.next()) {
+
+                    for (int j = 0; j < 10; j++) {
+                        arrayList.add( resultSet.getString("course" + (j + 1)));
+
+                    }
+
+
+
+                } else {
+                    System.out.println("No entry found with primary key: " + username);
+
+                }
+            }
+        }catch (SQLException e) {
+            System.out.println("Error getting course names.");
+            e.printStackTrace();
+
+        }
+        courseNames=  arrayList.toArray(new String[arrayList.size()]);
+        setupLayout();
+//        initComponents();
     }
 
     private void generateExtraActivityOptions(int numActivities) {
@@ -238,6 +289,9 @@ public class C0DailyProgressPage extends JFrame {
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
         String dayOfWeek = dayFormat.format(date);
         dayOfWeekLabel.setText(dayOfWeek);
+        dayOfWeekglobal=dayOfWeek;
+        System.out.println(dayOfWeek);
+        getCourseNames();
     }
 
     private void navigateToDashboard() {

@@ -8,10 +8,11 @@ CREATE TABLE  signup (
     PRIMARY KEY (username)
 );
 
-INSERT INTO signup (username, roll, password) VALUES ('testuser', 'roll123', 'testpassword');
+INSERT INTO signup (username, roll, password) VALUES ('tekjjytjulgsdgvlyutfgsfjhk.kstusgfdnger', 'roll1ggtgyg23', 'testpassword');
 
 SHOW DATABASES;
 USE academic_progress_tracker;
 SHOW TABLES;
 DESCRIBE signup;
 SELECT * FROM signup;
+-- rutinehirok-- 

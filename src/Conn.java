@@ -260,66 +260,60 @@ public class Conn {
     }
 
     public void setRutine(String username, String day, String[] rutine) {
-
-        System.out.println(day);
-        for (int i = 0; i < rutine.length; i++) {
-            System.out.println(rutine[i]);
-        }
-        // create new table for rutine
-        // check if day already exists then delete it and insert new rutine
+        // Create or update rutine<username> table
         String tableName = "rutine" + username;
-        String query2 = "INSERT INTO " + tableName + " (day, course1, course2, course3, course4, course5, course6, course7, course8, course9, course10) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String createRutineTable = "CREATE TABLE IF NOT EXISTS " + tableName + " (day VARCHAR(50) PRIMARY KEY, course1 VARCHAR(255), course2 VARCHAR(255), course3 VARCHAR(255), course4 VARCHAR(255), course5 VARCHAR(255), course6 VARCHAR(255), course7 VARCHAR(255), course8 VARCHAR(255), course9 VARCHAR(255), course10 VARCHAR(255))";
+        String deleteRutineEntry = "DELETE FROM " + tableName + " WHERE day = ?";
+        String insertRutineEntry = "INSERT INTO " + tableName + " (day, course1, course2, course3, course4, course5, course6, course7, course8, course9, course10) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String query1 = "CREATE TABLE IF NOT EXISTS rutine" + username
-                + " (day VARCHAR(50) PRIMARY KEY,course1 VARCHAR(255),course2 VARCHAR(255),course3 VARCHAR(255),course4 VARCHAR(255),course5 VARCHAR(255),course6 VARCHAR(255),course7 VARCHAR(255),course8 VARCHAR(255),course9 VARCHAR(255),course10 VARCHAR(255))";
-//        String query2 = "INSERT INTO rutine" + username + " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        String queryCheck = "SELECT COUNT(*) FROM rutine" + username + " WHERE day = ?";
-        String queryDelete = "DELETE FROM rutine" + username + " WHERE day = ?";
+        // Create or update dailyProg<username> table
+        String dailyProgTableName = "dailyProg" + username;
+        String createDailyProgTable = "CREATE TABLE IF NOT EXISTS " + dailyProgTableName + " (day VARCHAR(50), course VARCHAR(255), present INT, absent INT, ct1 INT, ct2 INT, ct3 INT, ct4 INT, assignment INT, PRIMARY KEY(day, course))";
+        String deleteDailyProgEntry = "DELETE FROM " + dailyProgTableName + " WHERE day = ?";
+        String insertDailyProgEntry = "INSERT INTO " + dailyProgTableName + " (day, course) VALUES (?, ?)";
 
         try (Connection connection = getConnection();
-             PreparedStatement pstmt1 = connection.prepareStatement(query1);
-             PreparedStatement pstmt2 = connection.prepareStatement(query2);
-             PreparedStatement pstmtCheck = connection.prepareStatement(queryCheck);
-             PreparedStatement pstmtDelete = connection.prepareStatement(queryDelete)) {
+             PreparedStatement createRutineTableStmt = connection.prepareStatement(createRutineTable);
+             PreparedStatement deleteRutineEntryStmt = connection.prepareStatement(deleteRutineEntry);
+             PreparedStatement insertRutineEntryStmt = connection.prepareStatement(insertRutineEntry);
+             PreparedStatement createDailyProgTableStmt = connection.prepareStatement(createDailyProgTable);
+             PreparedStatement deleteDailyProgEntryStmt = connection.prepareStatement(deleteDailyProgEntry);
+             PreparedStatement insertDailyProgEntryStmt = connection.prepareStatement(insertDailyProgEntry)) {
 
-            pstmt1.executeUpdate();
+            // Create rutine<username> table if it doesn't exist
+            createRutineTableStmt.executeUpdate();
 
-            // Check if the entry with the given day exists
-            pstmtCheck.setString(1, day);
-            try (ResultSet rs = pstmtCheck.executeQuery()) {
-                rs.next();
-                int count = rs.getInt(1);
+            // Check if the entry with the given day exists in rutine<username> table
+            deleteRutineEntryStmt.setString(1, day);
+            deleteRutineEntryStmt.executeUpdate();
 
-                if (count > 0) {
-                    // Entry exists, delete it
-                    pstmtDelete.setString(1, day);
-                    pstmtDelete.executeUpdate();
-                    System.out.println("Existing entry deleted.");
-                }
-            }
-
-            pstmt2.setString(1, day);
+            // Insert rutine entry for the day
+            insertRutineEntryStmt.setString(1, day);
             for (int i = 0; i < rutine.length; i++) {
-                    pstmt2.setString(i + 2, rutine[i]);
+                insertRutineEntryStmt.setString(i + 2, rutine[i]);
             }
-//             Fill remaining course columns with NULL if courses array is shorter
             for (int i = rutine.length; i < 10; i++) {
-                pstmt2.setString(i + 2, null);
+                insertRutineEntryStmt.setString(i + 2, null);
+            }
+            insertRutineEntryStmt.executeUpdate();
+
+            // Create dailyProg<username> table if it doesn't exist
+            createDailyProgTableStmt.executeUpdate();
+
+            // Check if the entry with the given day exists in dailyProg<username> table
+            deleteDailyProgEntryStmt.setString(1, day);
+            deleteDailyProgEntryStmt.executeUpdate();
+
+            // Insert daily progress entry for each course
+            for (int i = 0; i < rutine.length; i++) {
+                insertDailyProgEntryStmt.setString(1, day);
+                insertDailyProgEntryStmt.setString(2, rutine[i]);
+                insertDailyProgEntryStmt.executeUpdate();
             }
 
-            System.out.println("Executing SQL Query:");
-            System.out.println(pstmt2.toString());
-
-            int rowsInserted = pstmt2.executeUpdate();
-
-            if (rowsInserted > 0) {
-                System.out.println("Rutine set successfully.");
-            } else {
-                System.out.println("Rutine not set.");
-            }
+            System.out.println("Rutine and daily progress set successfully.");
         } catch (SQLException e) {
-            System.out.println("Error setting rutine.");
+            System.out.println("Error setting rutine and daily progress.");
             e.printStackTrace();
         }
     }

@@ -14,7 +14,7 @@ public class A2SignUp extends JFrame {
         initComponents();
         setupLayout();
         StyledComponents.setFixedSizeAndShow(this);
-        setSize(950, 850); // Set window size
+        setSize(950, 850); 
     }
     private void initComponents() {
         usernameField = new JTextField(30);

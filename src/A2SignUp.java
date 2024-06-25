@@ -1,16 +1,12 @@
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class A2SignUp extends JFrame {
 
-    private JTextField usernameField;
-    private JTextField rollField;
-    private JPasswordField passwordField;
-    private JPasswordField confirmPasswordField;
-    private JButton A2signUpButton;
-    private JButton backButton;
+    private JTextField usernameField, rollField, emailField, departmentField;
+    private JPasswordField passwordField, confirmPasswordField;
+    private JButton A2signUpButton, backButton;
 
     public A2SignUp() {
         setTitle("Academic Progress Tracker");
@@ -18,11 +14,13 @@ public class A2SignUp extends JFrame {
         initComponents();
         setupLayout();
         StyledComponents.setFixedSizeAndShow(this);
+        setSize(950, 850); // Set window size
     }
-
     private void initComponents() {
-        usernameField = new JTextField(30); // Corrected initialization
+        usernameField = new JTextField(30);
         rollField = new JTextField(30);
+        emailField = new JTextField(30);
+        departmentField = new JTextField(30);
         passwordField = new JPasswordField(30);
         confirmPasswordField = new JPasswordField(30);
         A2signUpButton = new JButton("Sign Up");
@@ -30,6 +28,8 @@ public class A2SignUp extends JFrame {
 
         StyledComponents.applyTextFieldStyle(usernameField);
         StyledComponents.applyTextFieldStyle(rollField);
+        StyledComponents.applyTextFieldStyle(emailField);
+        StyledComponents.applyTextFieldStyle(departmentField);
         StyledComponents.applyTextFieldStyle(passwordField);
         StyledComponents.applyTextFieldStyle(confirmPasswordField);
         StyledComponents.applyButtonStyle(A2signUpButton, StyledComponents.myGreenButton());
@@ -37,40 +37,37 @@ public class A2SignUp extends JFrame {
         A2signUpButton.setPreferredSize(new Dimension(400, 40));
         backButton.setPreferredSize(new Dimension(400, 40));
 
-        A2signUpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String roll = rollField.getText();
-                String password = new String(passwordField.getPassword());
-                String confirmPassword = new String(confirmPasswordField.getPassword());
-
-                try {
-                    if (username.isEmpty() || roll.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                        JOptionPane.showMessageDialog(A2SignUp.this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else if (!password.equals(confirmPassword)) {
-                        JOptionPane.showMessageDialog(A2SignUp.this, "Passwords don't match", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        Conn c1 = new Conn();
-                        String q1 = "insert into signup values('" + username + "','" + roll + "','" + password + "')";
-                        c1.s.executeUpdate(q1);
-
-                        new A2SignUp().setVisible(true);
-                        setVisible(false);
-                    }
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
+        A2signUpButton.addActionListener(e -> signUp());
+        backButton.addActionListener(e -> {
+            new A1LoginPage().setVisible(true);
+            dispose();
         });
+    }
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+    private void signUp() {
+        String username = usernameField.getText();
+        String roll = rollField.getText();
+        String email = emailField.getText();
+        String department = departmentField.getText();
+        String password = new String(passwordField.getPassword());
+        String confirmPassword = new String(confirmPasswordField.getPassword());
+
+        if (username.isEmpty() || roll.isEmpty() || email.isEmpty()|| department.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Passwords don't match", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            try {
+                Conn c1 = new Conn();
+                c1.saveUserInfo(username, roll, email, department, password);
+                JOptionPane.showMessageDialog(this, "Sign up successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 new A1LoginPage().setVisible(true);
                 dispose();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error signing up", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        });
+        }
     }
 
     private void setupLayout() {
@@ -86,17 +83,20 @@ public class A2SignUp extends JFrame {
         JLabel createAccountLabel = new JLabel("Create Account");
         createAccountLabel.setFont(new Font("Arial", Font.BOLD, 24));
         createAccountLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        createAccountLabel.setVerticalAlignment(SwingConstants.CENTER);
         panel.add(createAccountLabel, gbc);
         gbc.gridy++;
 
         JLabel usernameLabel = new JLabel("Username:");
         JLabel rollLabel = new JLabel("Roll:");
+        JLabel emailLabel = new JLabel("Email:");
+        JLabel departmentLabel = new JLabel("Department:");
         JLabel passwordLabel = new JLabel("Password:");
         JLabel confirmPasswordLabel = new JLabel("Confirm Password:");
 
         StyledComponents.applyLabelStyle(usernameLabel);
         StyledComponents.applyLabelStyle(rollLabel);
+        StyledComponents.applyLabelStyle(emailLabel);
+        StyledComponents.applyLabelStyle(departmentLabel);
         StyledComponents.applyLabelStyle(passwordLabel);
         StyledComponents.applyLabelStyle(confirmPasswordLabel);
 
@@ -107,6 +107,14 @@ public class A2SignUp extends JFrame {
         panel.add(rollLabel, gbc);
         gbc.gridy++;
         panel.add(rollField, gbc);
+        gbc.gridy++;
+        panel.add(emailLabel, gbc);
+        gbc.gridy++;
+        panel.add(emailField, gbc);
+        gbc.gridy++;
+        panel.add(departmentLabel, gbc);
+        gbc.gridy++;
+        panel.add(departmentField, gbc);
         gbc.gridy++;
         panel.add(passwordLabel, gbc);
         gbc.gridy++;

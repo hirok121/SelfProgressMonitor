@@ -2,20 +2,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class A1LoginPage extends JFrame {
 
     private JTextField usernameField;
-    private JTextField rollField;
     private JPasswordField passwordField;
     private JButton loginButton;
-    private JButton A2signUpButton;
+    private JButton signUpButton;
 
     public A1LoginPage() {
-        setTitle("Academic Progress Tracker");
+        setTitle("Academic Progress Tracker - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
         setupLayout();
@@ -23,63 +19,80 @@ public class A1LoginPage extends JFrame {
     }
 
     private void initComponents() {
-        JPanel topPanel = new JPanel();
-        topPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 20, 0));
-        JLabel headerLabel = new JLabel("Welcome to Academic Progress Tracker");
-        StyledComponents.applyHighlightedBiggerFontStyle(headerLabel);
-        topPanel.add(headerLabel);
-
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
-
         usernameField = new JTextField(30);
-        rollField = new JTextField(30);
         passwordField = new JPasswordField(30);
-        loginButton = new JButton("Log in");
-        A2signUpButton = new JButton("Sign Up");
+        loginButton = new JButton("Login");
+        signUpButton = new JButton("Sign Up");
+
         StyledComponents.applyTextFieldStyle(usernameField);
-        StyledComponents.applyTextFieldStyle(rollField);
         StyledComponents.applyTextFieldStyle(passwordField);
         StyledComponents.applyButtonStyle(loginButton, StyledComponents.myGreenButton());
-        StyledComponents.applyButtonStyle(A2signUpButton, StyledComponents.myBlueButton());
+        StyledComponents.applyButtonStyle(signUpButton, StyledComponents.myBlueButton());
+
+        loginButton.setPreferredSize(new Dimension(400, 40));
+        signUpButton.setPreferredSize(new Dimension(400, 40));
 
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
-                String roll = rollField.getText();
                 String password = new String(passwordField.getPassword());
-                saveUserInfo(username, roll, password);
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(A1LoginPage.this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // Validate user credentials
+                    Conn conn = new Conn();
+
+                    //boolean isValidUser = conn.validateUser(username, password);
+                    if (conn.AuthUser(username,password)) {
+                        User user=new User(username,password);
+                        user.updateinfo();
+                        SessionManager.getInstance().login(user);
+
+                        new B0DashboardPage().setVisible(true);
+                     dispose();
+                } else {
+                       JOptionPane.showMessageDialog(A1LoginPage.this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+                 }
+             }
             }
         });
 
-        A2signUpButton.addActionListener(new ActionListener() {
+        signUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new A2SignUp();
+                new A2SignUp().setVisible(true);
                 dispose();
             }
         });
+    }
+
+    private void setupLayout() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel loginLabel = new JLabel("Login");
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(loginLabel, gbc);
+        gbc.gridy++;
 
         JLabel usernameLabel = new JLabel("Username:");
-        JLabel rollLabel = new JLabel("Roll:");
         JLabel passwordLabel = new JLabel("Password:");
+
         StyledComponents.applyLabelStyle(usernameLabel);
-        StyledComponents.applyLabelStyle(rollLabel);
         StyledComponents.applyLabelStyle(passwordLabel);
 
         panel.add(usernameLabel, gbc);
         gbc.gridy++;
         panel.add(usernameField, gbc);
-        gbc.gridy++;
-        panel.add(rollLabel, gbc);
-        gbc.gridy++;
-        panel.add(rollField, gbc);
         gbc.gridy++;
         panel.add(passwordLabel, gbc);
         gbc.gridy++;
@@ -88,30 +101,9 @@ public class A1LoginPage extends JFrame {
         gbc.gridwidth = 1;
         panel.add(loginButton, gbc);
         gbc.gridy++;
-        panel.add(A2signUpButton, gbc);
+        panel.add(signUpButton, gbc);
 
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(topPanel, BorderLayout.NORTH);
-        getContentPane().add(panel, BorderLayout.CENTER);
-    }
-
-    private void setupLayout() {}
-
-    private void saveUserInfo(String username, String roll, String password) {
-        Conn conn = new Conn();
-        String query = "INSERT INTO users (username, roll, password) VALUES (?, ?, ?)";
-
-        try (Connection connection = conn.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setString(1, username);
-            pstmt.setString(2, roll);
-            pstmt.setString(3, password);
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(this, "User information saved successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error saving user information.");
-        }
+        getContentPane().add(panel);
     }
 
     public static void main(String[] args) {

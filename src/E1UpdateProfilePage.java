@@ -39,91 +39,98 @@ public class E1UpdateProfilePage extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(nameLabel, gbc);
 
-        nameField = new JTextField(20);
+        nameField = new JTextField();
+        nameField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(nameField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(nameField, gbc);
 
         JLabel emailLabel = new JLabel("Email:");
         StyledComponents.applyLabelStyle(emailLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(emailLabel, gbc);
 
-        emailField = new JTextField(20);
+        emailField = new JTextField();
+        emailField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(emailField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(emailField, gbc);
 
         JLabel rollLabel = new JLabel("Roll:");
         StyledComponents.applyLabelStyle(rollLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(rollLabel, gbc);
 
-        rollField = new JTextField(20);
+        rollField = new JTextField();
+        rollField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(rollField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(rollField, gbc);
 
         JLabel semesterLabel = new JLabel("Semester:");
         StyledComponents.applyLabelStyle(semesterLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(semesterLabel, gbc);
 
-        semesterField = new JTextField(20);
+        semesterField = new JTextField();
+        semesterField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(semesterField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(semesterField, gbc);
 
         JLabel phoneLabel = new JLabel("Phone:");
         StyledComponents.applyLabelStyle(phoneLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(phoneLabel, gbc);
 
-        phoneField = new JTextField(20);
+        phoneField = new JTextField();
+        phoneField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(phoneField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(phoneField, gbc);
 
         JLabel bloodLabel = new JLabel("Blood:");
         StyledComponents.applyLabelStyle(bloodLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(bloodLabel, gbc);
 
-        bloodField = new JTextField(20);
+        bloodField = new JTextField();
+        bloodField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(bloodField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(bloodField, gbc);
 
         JLabel departmentLabel = new JLabel("Department:");
         StyledComponents.applyLabelStyle(departmentLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 10, 10); // Add bottom and right insets for spacing
+        gbc.insets = new Insets(0, 0, 15, 10); // Increased bottom inset for spacing
         centerPanel.add(departmentLabel, gbc);
 
-        departmentField = new JTextField(20);
+        departmentField = new JTextField();
+        departmentField.setPreferredSize(new Dimension(400, 35)); // Set preferred size
         StyledComponents.applyTextFieldStyle(departmentField);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 10, 0); // Reset insets for text field
+        gbc.insets = new Insets(0, 0, 15, 0); // Increased bottom inset for spacing
         centerPanel.add(departmentField, gbc);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -180,6 +187,10 @@ public class E1UpdateProfilePage extends JFrame {
         String blood = bloodField.getText();
         String department = departmentField.getText();
 
+        User user=SessionManager.getInstance().getCurrentUser();
+        Conn c1 = new Conn();
+        c1.updateUserInfo(user.getUsername(),roll,email,department);
+
         JOptionPane.showMessageDialog(this,
                 "Profile saved successfully!\nName: " + name +
                         "\nEmail: " + email +
@@ -188,6 +199,8 @@ public class E1UpdateProfilePage extends JFrame {
                         "\nPhone: " + phone +
                         "\nBlood: " + blood +
                         "\nDepartment: " + department);
+        user.updateinfo();
+
     }
 
     public static void main(String[] args) {

@@ -88,7 +88,6 @@ public class E2UpdateCoursePage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveCourses();
-                
             }
         });
 
@@ -131,37 +130,25 @@ public class E2UpdateCoursePage extends JFrame {
             gbc.gridx = 1;
             courseDetailsPanel.add(courseCodeField, gbc);
 
-            JRadioButton classRadioButton = new JRadioButton("Class");
-            JRadioButton labRadioButton = new JRadioButton("Lab");
-            ButtonGroup group = new ButtonGroup();
-            group.add(classRadioButton);
-            group.add(labRadioButton);
-            JPanel radioButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            radioButtonPanel.add(classRadioButton);
-            radioButtonPanel.add(labRadioButton);
-            gbc.gridx = 2;
-            courseDetailsPanel.add(radioButtonPanel, gbc);
-
             gbc.gridy++;
         }
     }
 
     private void saveCourses() {
-        // Implement save functionality here
         int numberOfCourses = Integer.parseInt((String) numberOfCoursesComboBox.getSelectedItem());
+
+        String[] courses = new String[numberOfCourses];
 
         for (int i = 0; i < numberOfCourses; i++) {
             Component[] components = courseDetailsPanel.getComponents();
-            JTextField courseCodeField = (JTextField) components[i * 3 + 1];
-            JPanel radioButtonPanel = (JPanel) components[i * 3 + 2];
-            JRadioButton classRadioButton = (JRadioButton) radioButtonPanel.getComponent(0);
-            JRadioButton labRadioButton = (JRadioButton) radioButtonPanel.getComponent(1);
+            JTextField courseCodeField = (JTextField) components[i * 2 + 1];
 
             String courseCode = courseCodeField.getText();
-            String classLabOption = classRadioButton.isSelected() ? "Class" : "Lab";
-
-            System.out.println("Course " + (i + 1) + ": Code = " + courseCode + ", Type = " + classLabOption);
+            courses[i] = courseCode;
         }
+        User user = SessionManager.getInstance().getCurrentUser();
+        Conn conn = new Conn();
+        conn.registerCourse(user.getUsername(), courses);
 
         JOptionPane.showMessageDialog(this, "Courses saved successfully!");
     }

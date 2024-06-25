@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class StyledComponents {
 
-    private static final int DEFAULT_WIDTH = 800;
-    private static final int DEFAULT_HEIGHT = 700;
+    private static final int DEFAULT_WIDTH = 900;
+    private static final int DEFAULT_HEIGHT = 800;
 
     public static void applyButtonStyle(JButton button) {
         applyButtonStyle(button, myGreenButton());

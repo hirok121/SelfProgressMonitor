@@ -2,20 +2,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class E3UpdateRoutinePage extends JFrame {
 
     private JComboBox<String> dayComboBox;
-    private JPanel classPanel;
-    private JPanel labPanel;
-    private JComboBox<String> numClassesSelect;
-    private JComboBox<String> numLabsSelect;
+    private JPanel coursePanel;
+    private JComboBox<String> numCoursesSelect;
 
     public E3UpdateRoutinePage() {
         setTitle("Update Routine");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initComponents();
-        // setupLayout();
         StyledComponents.setFixedSizeAndShow(this);
     }
 
@@ -44,55 +43,32 @@ public class E3UpdateRoutinePage extends JFrame {
         dayComboBox = new JComboBox<>(days);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 10, 0, 0);
+        gbc.insets = new Insets(0, 10, 20, 0); // Added extra gap between day and course line
         centerPanel.add(dayComboBox, gbc);
 
-        JLabel numClassesLabel = new JLabel("Number of Classes:");
-        StyledComponents.applyLabelStyle(numClassesLabel);
+        JLabel numCoursesLabel = new JLabel("Number of Courses:");
+        StyledComponents.applyLabelStyle(numCoursesLabel);
         gbc.gridx = 0;
         gbc.gridy++;
-        centerPanel.add(numClassesLabel, gbc);
+        gbc.insets = new Insets(0, 0, 0, 0); // Reset the insets
+        centerPanel.add(numCoursesLabel, gbc);
 
-        String[] classNumbers = {"0", "1", "2", "3", "4", "5"};
-        numClassesSelect = new JComboBox<>(classNumbers);
-        numClassesSelect.addActionListener(new ActionListener() {
+        String[] courseNumbers = {"0", "1", "2", "3", "4", "5", "6"};
+        numCoursesSelect = new JComboBox<>(courseNumbers);
+        numCoursesSelect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                generateClassDropdowns(Integer.parseInt((String) numClassesSelect.getSelectedItem()));
+                generateCourseDropdowns(Integer.parseInt((String) numCoursesSelect.getSelectedItem()));
             }
         });
         gbc.gridx = 1;
-        centerPanel.add(numClassesSelect, gbc);
+        centerPanel.add(numCoursesSelect, gbc);
 
-        classPanel = new JPanel(new GridBagLayout()); // Dynamic panel for classes
+        coursePanel = new JPanel(new GridBagLayout()); // Dynamic panel for courses
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
-        centerPanel.add(classPanel, gbc);
-
-        JLabel numLabsLabel = new JLabel("Number of Labs:");
-        StyledComponents.applyLabelStyle(numLabsLabel);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        centerPanel.add(numLabsLabel, gbc);
-
-        String[] labNumbers = {"0", "1", "2", "3", "4", "5"};
-        numLabsSelect = new JComboBox<>(labNumbers);
-        numLabsSelect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                generateLabDropdowns(Integer.parseInt((String) numLabsSelect.getSelectedItem()));
-            }
-        });
-        gbc.gridx = 1;
-        centerPanel.add(numLabsSelect, gbc);
-
-        labPanel = new JPanel(new GridBagLayout()); // Dynamic panel for labs
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        centerPanel.add(labPanel, gbc);
+        centerPanel.add(coursePanel, gbc);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
@@ -135,91 +111,87 @@ public class E3UpdateRoutinePage extends JFrame {
 
         getContentPane().add(mainPanel);
 
-        // Set a fixed size for the frame
         setSize(600, 400); // Adjust the size as needed
-
-        // Center the frame on the screen
         setLocationRelativeTo(null);
     }
 
-    private void generateClassDropdowns(int numClasses) {
-        classPanel.removeAll();
+    private void generateCourseDropdowns(int numCourses) {
+        coursePanel.removeAll();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 10, 5, 10);
 
-        for (int i = 1; i <= numClasses; i++) {
-            JLabel classLabel = new JLabel("Class " + i + ":");
-            StyledComponents.applyLabelStyle(classLabel);
-            gbc.gridy = i - 1;
-            classPanel.add(classLabel, gbc);
+        for (int i = 1; i <= numCourses; i++) {
+            JLabel courseLabel = new JLabel("Course " + i + ":");
+            StyledComponents.applyLabelStyle(courseLabel);
+            gbc.gridy = (i - 1) * 2;
+            coursePanel.add(courseLabel, gbc);
 
-            JComboBox<String> classDropdown = new JComboBox<>(new String[]{"Option 1", "Option 2", "Option 3"}); // Replace with your options
-            classPanel.add(classDropdown, gbc);
+            Conn conn = new Conn();
+            String username=SessionManager.getInstance().getCurrentUser().getUsername();
+
+            String querygetdata ="SELECT * FROM courses WHERE username = '" + username + "'";
+            String[] courses = new String[10];
+        try (Connection connection = conn.getConnection();
+             PreparedStatement pstmtgetdata = connection.prepareStatement(querygetdata)) {
+
+            try (ResultSet resultSet = pstmtgetdata.executeQuery()) {
+                if (resultSet.next()) {
+
+                    for (int j = 0; j < 10; j++) {
+                        courses[j] = resultSet.getString("course" + (j + 1));
+                        System.out.println(courses[j]);
+                    }
+
+                } else {
+                    System.out.println("No entry found with primary key: " + username);
+                }
+            }
+        }catch (SQLException e) {
+                System.out.println("Error setting daily progress.");
+                e.printStackTrace();
+            }
+
+
+            JComboBox<String> courseDropdown = new JComboBox<>(courses); // Replace with your options
+            courseDropdown.setPreferredSize(new Dimension(250, 25));
             gbc.gridy++;
+            coursePanel.add(courseDropdown, gbc);
         }
 
-        classPanel.revalidate();
-        classPanel.repaint();
-    }
-
-    private void generateLabDropdowns(int numLabs) {
-        labPanel.removeAll();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 10);
-
-        for (int i = 1; i <= numLabs; i++) {
-            JLabel labLabel = new JLabel("Lab " + i + ":");
-            StyledComponents.applyLabelStyle(labLabel);
-            gbc.gridy = i - 1;
-            labPanel.add(labLabel, gbc);
-
-            JComboBox<String> labDropdown = new JComboBox<>(new String[]{"Option 1", "Option 2", "Option 3"}); // Replace with your options
-            labPanel.add(labDropdown, gbc);
-            gbc.gridy++;
-        }
-
-        labPanel.revalidate();
-        labPanel.repaint();
+        coursePanel.revalidate();
+        coursePanel.repaint();
     }
 
     private void saveRoutine() {
         String day = (String) dayComboBox.getSelectedItem();
         StringBuilder message = new StringBuilder("Routine saved successfully for " + day + "\n");
 
-        // Retrieve class selections
-        for (Component component : classPanel.getComponents()) {
+
+        ArrayList<String> arrayList = new ArrayList<>();
+        String username=SessionManager.getInstance().getCurrentUser().getUsername();
+
+        // Retrieve course selections
+        for (Component component : coursePanel.getComponents()) {
             if (component instanceof JComboBox) {
                 JComboBox<String> comboBox = (JComboBox<String>) component;
                 String selection = (String) comboBox.getSelectedItem();
+                arrayList.add(selection);
                 message.append(comboBox.getParent().getComponentZOrder(comboBox) / 2 + 1).append(": ").append(selection).append("\n");
             }
         }
 
-        // Retrieve lab selections
-        for (Component component : labPanel.getComponents()) {
-            if (component instanceof JComboBox) {
-                JComboBox<String> comboBox = (JComboBox<String>) component;
-                String selection = (String) comboBox.getSelectedItem();
-                message.append(comboBox.getParent().getComponentZOrder(comboBox) / 2 + 1).append(": ").append(selection).append("\n");
-            }
-        }
+        String[] courses=arrayList.toArray(new String[arrayList.size()]);
+
+        Conn conn = new Conn();
+        conn.setRutine(username,day,courses);
 
         JOptionPane.showMessageDialog(this, message.toString());
     }
 
-    private void navigateToPreviousPage() {
-        // Implement navigation to the previous page
-        dispose(); // Close the current window
-    }
-
     private void navigateToDashboard() {
-        // Implement navigation to the dashboard page
         new B0DashboardPage().setVisible(true);
         dispose(); // Close the current window
     }

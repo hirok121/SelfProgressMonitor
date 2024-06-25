@@ -13,17 +13,16 @@ public class B0DashboardPage extends JFrame {
         initComponents();
         StyledComponents.setFixedSizeAndShow(this); // Apply fixed size and centering
     }
-
     private void initComponents() {
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(90, 50, 50, 50)); // Adjusted top padding to 90px
+
         JLabel headerLabel = new JLabel("Main Menu");
         StyledComponents.applyHighlightedBiggerFontStyle(headerLabel);
         headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(headerLabel, BorderLayout.NORTH);
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -46,8 +45,8 @@ public class B0DashboardPage extends JFrame {
                 "../svg/sign-out-alt-solid.png",
         };
 
-        int[] iconWidths = { 29, 31, 31, 35, 29 };
-        int[] iconHeights = { 30, 27, 27, 35, 29 };
+        int[] iconWidths = {29, 31, 31, 35, 29};
+        int[] iconHeights = {30, 27, 27, 35, 29};
 
         for (int i = 0; i < menuItems.length; i++) {
             JButton button = new JButton(menuItems[i]);
@@ -65,12 +64,16 @@ public class B0DashboardPage extends JFrame {
             panel.add(button, gbc);
             gbc.gridy++;
             gbc.insets = new Insets(20, 10, 20, 10); // Add extra space between buttons
+
+            // Add action listener for each menu item button
             button.addActionListener(new MenuActionListener(menuItems[i]));
         }
 
         topPanel.add(panel, BorderLayout.CENTER);
         add(topPanel);
     }
+
+
 
     private ImageIcon resizeIcon(String iconPath, int width, int height) {
         try {
@@ -95,6 +98,7 @@ public class B0DashboardPage extends JFrame {
         public void actionPerformed(ActionEvent e) {
             switch (menuItem) {
                 case "Logout":
+                    SessionManager.getInstance().logout();
                     new A1LoginPage().setVisible(true);
                     dispose();
                     break;
@@ -125,3 +129,4 @@ public class B0DashboardPage extends JFrame {
         SwingUtilities.invokeLater(B0DashboardPage::new);
     }
 }
+//complete

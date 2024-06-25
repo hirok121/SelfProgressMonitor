@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +12,7 @@ public class C0DailyProgressPage extends JFrame {
     private JComboBox<String> numActivitiesSelect;
     private JPanel extraActivityOptionsPanel;
     private JButton submitButton;
-    private JButton homeButton; // Added home button
+    private JButton homeButton;
     private JSpinner dateSpinner;
     private JLabel dayOfWeekLabel;
     private JButton prevDayButton;
@@ -81,42 +80,49 @@ public class C0DailyProgressPage extends JFrame {
         });
 
         dayOfWeekLabel = new JLabel();
+        StyledComponents.applyLabelStyle(dayOfWeekLabel); // Apply label style for dayOfWeekLabel
         dayOfWeekLabel.setFont(new Font("Arial", Font.BOLD, 18));
         dayOfWeekLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                submitDailyProgress();
+            }
+        });
     }
 
     private void setupLayout() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout()); //! keno use ??
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.CENTER; // Center align components
+        gbc.insets = new Insets(5, 5, 5, 5); // Adjust insets for consistent spacing
 
         JLabel headerLabel = new JLabel("Daily Progress");
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headerLabel.setVerticalAlignment(SwingConstants.CENTER);
 
-        // Adjust y position to have 20px space from top
-        gbc.anchor = GridBagConstraints.PAGE_START; // Aligns at the top of the area
-        gbc.insets = new Insets(20, 10, 10, 10); // 20px top, 10px left, right, bottom
         panel.add(headerLabel, gbc);
 
         gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.anchor = GridBagConstraints.LINE_START; // Align components to the left
 
         JLabel dateLabel = new JLabel("Date:");
         JLabel course1Label = new JLabel("Course 1:");
         JLabel course2Label = new JLabel("Course 2:");
         JLabel numActivitiesLabel = new JLabel("Number of Extra Activities:");
+        JLabel dayOfWeekTitleLabel = new JLabel("Day of the Week:");
 
-        StyledComponents.applyLabelStyle(dateLabel); // Apply label style
-        StyledComponents.applyLabelStyle(course1Label); // Apply label style
-        StyledComponents.applyLabelStyle(course2Label); // Apply label style
-        StyledComponents.applyLabelStyle(numActivitiesLabel); // Apply label style
+        StyledComponents.applyLabelStyle(dateLabel);
+        StyledComponents.applyLabelStyle(course1Label);
+        StyledComponents.applyLabelStyle(course2Label);
+        StyledComponents.applyLabelStyle(numActivitiesLabel);
+        StyledComponents.applyLabelStyle(dayOfWeekTitleLabel);
 
         JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         datePanel.add(prevDayButton);
@@ -129,7 +135,7 @@ public class C0DailyProgressPage extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy++;
-        panel.add(new JLabel("Day of the Week:"), gbc);
+        panel.add(dayOfWeekTitleLabel, gbc);
         gbc.gridx++;
         panel.add(dayOfWeekLabel, gbc);
 
@@ -163,7 +169,7 @@ public class C0DailyProgressPage extends JFrame {
         buttonPanel.add(innerButtonPanel, BorderLayout.LINE_END);
 
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.BASELINE_TRAILING; // Align at the bottom-right corner
+        gbc.anchor = GridBagConstraints.BASELINE_TRAILING;
         panel.add(buttonPanel, gbc);
 
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -171,18 +177,71 @@ public class C0DailyProgressPage extends JFrame {
 
     private void generateExtraActivityOptions(int numActivities) {
         extraActivityOptionsPanel.removeAll();
-        extraActivityOptionsPanel.setLayout(new GridLayout(numActivities, 2, 10, 10));
+        extraActivityOptionsPanel.setLayout(new GridBagLayout()); //! keno use ??
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         for (int i = 1; i <= numActivities; i++) {
-            JLabel activityLabel = new JLabel("Activity " + i + ":");
-            JComboBox<String> activitySelect = new JComboBox<>(new String[]{"Assignment", "Quiz", "Extra Class"});
+            JPanel activityPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-            extraActivityOptionsPanel.add(activityLabel);
-            extraActivityOptionsPanel.add(activitySelect);
+            // Activity number label
+            JLabel activityLabel = new JLabel("Activity " + i + ":");
+            activityPanel.add(activityLabel);
+
+            // Course name dropdown
+            JComboBox<String> courseSelect = new JComboBox<>(new String[]{"Course 1", "Course 2"});
+            activityPanel.add(courseSelect);
+
+            // Type of activity dropdown including "CT"
+            JComboBox<String> activitySelect = new JComboBox<>(new String[]{"Assignment",  "Extra Class", "CT","Quiz"});
+            activityPanel.add(activitySelect);
+
+            // Marks input field (conditional based on activity type)
+            JTextField marksField = new JTextField(10);
+            if (activitySelect.getSelectedItem().equals("CT")) {
+                // Create additional select boxes for CT (CT1, CT2, CT3, CT4)
+                JComboBox<String> ctSelect = new JComboBox<>(new String[]{"CT1", "CT2", "CT3", "CT4"});
+                activityPanel.add(ctSelect);
+            } else {
+                activityPanel.add(marksField);
+            }
+
+            extraActivityOptionsPanel.add(activityPanel, gbc);
+            gbc.gridy++;
         }
 
         extraActivityOptionsPanel.revalidate();
         extraActivityOptionsPanel.repaint();
+    }
+
+
+    private void submitDailyProgress() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Date: ").append(dateSpinner.getValue()).append("\n");
+        sb.append("Day of the Week: ").append(dayOfWeekLabel.getText()).append("\n");
+        sb.append("Course 1 Attendance: ").append(course1Attendance.getSelectedItem()).append("\n");
+        sb.append("Course 2 Attendance: ").append(course2Attendance.getSelectedItem()).append("\n");
+        sb.append("Number of Extra Activities: ").append(numActivitiesSelect.getSelectedItem()).append("\n");
+
+        for (Component comp : extraActivityOptionsPanel.getComponents()) {
+            if (comp instanceof JPanel) {
+                JPanel activityPanel = (JPanel) comp;
+                JLabel activityLabel = (JLabel) activityPanel.getComponent(0);
+                JComboBox<String> courseSelect = (JComboBox<String>) activityPanel.getComponent(1);
+                JComboBox<String> activitySelect = (JComboBox<String>) activityPanel.getComponent(2);
+                JTextField marksField = (JTextField) activityPanel.getComponent(3);
+
+                sb.append(activityLabel.getText()).append(" ");
+                sb.append(courseSelect.getSelectedItem()).append(" ");
+                sb.append(activitySelect.getSelectedItem()).append(" ");
+                sb.append(marksField != null ? marksField.getText() : "").append("\n");
+            }
+        }
+
+        System.out.println(sb.toString());
     }
 
     private void updateDate(int amount) {
@@ -201,9 +260,8 @@ public class C0DailyProgressPage extends JFrame {
     }
 
     private void navigateToDashboard() {
-        // Implement navigation to the dashboard page
         new B0DashboardPage().setVisible(true);
-        dispose(); // Close the current window
+        dispose();
     }
 
     public static void main(String[] args) {

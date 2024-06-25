@@ -87,11 +87,15 @@ public class E5ChangePassword extends JFrame {
                 String newPassword = newPasswordTextField.getText();
                 String confirmPassword = confirmPasswordTextField.getText();
 
+                User user = SessionManager.getInstance().getCurrentUser();
+
                 if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(E5ChangePassword.this, "Please fill in all fields.");
                 } else if (!newPassword.equals(confirmPassword)) {
                     JOptionPane.showMessageDialog(E5ChangePassword.this, "New password and confirm password do not match.");
-                } else {
+                } else if (oldPassword.equals(user.getPassword())) {
+                    Conn conn = new Conn();
+                    conn.changePassword(user.getUsername(),newPassword);
                     JOptionPane.showMessageDialog(E5ChangePassword.this, "Password changed successfully!");
                     oldPasswordTextField.setText("");
                     newPasswordTextField.setText("");

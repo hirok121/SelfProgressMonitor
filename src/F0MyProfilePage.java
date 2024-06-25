@@ -25,17 +25,18 @@ public class F0MyProfilePage extends JFrame {
 
     JPanel personalInfoPanel = new JPanel(new GridLayout(5, 1));
     personalInfoPanel.setBorder(
-      BorderFactory.createTitledBorder("Personal Information")
-    );
+        BorderFactory.createTitledBorder("Personal Information"));
     personalInfoPanel.setBackground(Color.WHITE);
 
+    User user = SessionManager.getInstance().getCurrentUser();
+
     String[] personalInfoLabels = {
-      "Name: Isteak Ahmed Shajal",
-      "Department: CSE",
-      "Roll: 2103138",
-      "Email: isteak.0023@gmail.com",
-      "Phone: 123-456-7890",
-      "Blood Group: O+",
+        "Name: " + user.getUsername(),
+        "Department: " + user.getDept(),
+        "Roll: " + user.getRoll(),
+        "Email: " + user.getEmail(),
+        "Phone: " + user.getPhone(),
+        "Blood Group: " + user.getBloodGroup() // Add more fields as needed
     };
     addInfoLabels(personalInfoPanel, personalInfoLabels);
 
@@ -43,14 +44,13 @@ public class F0MyProfilePage extends JFrame {
 
     JPanel academicInfoPanel = new JPanel(new GridLayout(4, 1));
     academicInfoPanel.setBorder(
-      BorderFactory.createTitledBorder("Academic Information")
-    );
+        BorderFactory.createTitledBorder("Academic Information"));
     academicInfoPanel.setBackground(Color.WHITE);
 
     String[] academicInfoLabels = {
-      "Current Semester: 2-1",
-      "Courses: CSE 2103 DLD",
-      "Routine: Monday: Math 101 (9:00 AM - 10:30 AM), Physics 102 (11:00 AM - 12:30 PM)",
+        "Current Semester: 2-1",
+        "Courses: CSE 2103 DLD",
+        "Routine: Monday: Math 101 (9:00 AM - 10:30 AM), Physics 102 (11:00 AM - 12:30 PM)",
     };
     addInfoLabels(academicInfoPanel, academicInfoLabels);
 
@@ -61,9 +61,8 @@ public class F0MyProfilePage extends JFrame {
     // Positioning the Home button with E2UpdateCoursePage.java style
     JButton homeButton = new JButton("Home");
     StyledComponents.applyButtonStyle(
-      homeButton,
-      StyledComponents.myBlackMamba()
-    );
+        homeButton,
+        StyledComponents.myBlackMamba());
     homeButton.addActionListener(e -> {
       // Add logic to redirect to the dashboard or home page
       // For example:

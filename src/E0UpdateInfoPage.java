@@ -18,15 +18,26 @@ public class E0UpdateInfoPage extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.insets = new Insets(10, 10, 10, 10); // Adjusted insets for spacing
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        container.add(contentPanel, BorderLayout.CENTER);
+        // Add empty labels for spacing
+        JLabel emptyLabel1 = new JLabel();
+        contentPanel.add(emptyLabel1, gbc);
+        gbc.gridy++;
 
         JLabel headerLabel = new JLabel("Update Info");
-        StyledComponents.applyHighlightedBiggerFontStyle(headerLabel);
+        StyledComponents.applyHighlightedBiggerFontStyle(headerLabel); // Apply styling
         headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        container.add(headerLabel, BorderLayout.NORTH);
+
+        gbc.gridx = 0;
+        gbc.gridwidth = 2; // Span two columns
+        gbc.anchor = GridBagConstraints.CENTER; // Center align
+        contentPanel.add(headerLabel, gbc);
+        gbc.gridy++;
+
+        // Reset grid width
+        gbc.gridwidth = 1;
 
         JButton updateProfileBtn = createButton("Update Profile");
         JButton updateCourseBtn = createButton("Update Course");
@@ -34,6 +45,8 @@ public class E0UpdateInfoPage extends JFrame {
         JButton uploadPhotoBtn = createButton("Upload Photo");
         JButton changePasswordBtn = createButton("Change Password");
 
+        gbc.gridx = 0; // Reset grid x position
+        gbc.gridy++;
         contentPanel.add(updateProfileBtn, gbc);
         gbc.gridy++;
         contentPanel.add(updateCourseBtn, gbc);
@@ -56,6 +69,7 @@ public class E0UpdateInfoPage extends JFrame {
             dispose();
         });
 
+        container.add(contentPanel, BorderLayout.CENTER);
         getContentPane().add(container);
     }
 
